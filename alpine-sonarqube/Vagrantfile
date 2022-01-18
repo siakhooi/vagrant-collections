@@ -1,0 +1,18 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/alpine314"
+  config.vm.synced_folder "./", "/vagrant" 
+  config.vm.network "forwarded_port", guest: 9000, host: 9000
+  config.vm.provision "file", source:"docker-compose.yml", destination: "/home/vagrant/docker-compose.yml"
+  config.vm.provision "shell", inline: <<-SHELL
+    apk update
+    apk add docker docker-compose
+    rc-update add docker boot
+    service docker start
+    addgroup vagrant docker
+    echo "vm.max_map_count = 262144" >>/etc/sysctl.conf
+    sysctl -w vm.max_map_count=262144
+  SHELL
+end

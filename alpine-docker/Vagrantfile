@@ -1,0 +1,14 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/alpine314"
+  config.vm.synced_folder "./", "/vagrant" 
+  config.vm.provision "shell", inline: <<-SHELL
+    apk update
+    apk add docker docker-compose
+    rc-update add docker boot
+    service docker start
+    addgroup vagrant docker
+  SHELL
+end

@@ -3,6 +3,7 @@
 Common useful Vagrantfiles
 
 - `alpine-openssl`
+  - `openssl`
 - `alpine-docker`
   - `docker`
   - `docker-compose`

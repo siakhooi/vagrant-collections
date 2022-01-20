@@ -1,0 +1,20 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# centos8-docker
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/centos8"
+
+  config.vm.synced_folder "./", "/vagrant", type: "virtualbox"
+
+  config.vm.provision "shell", inline: <<-SHELL
+    yum update -y
+    dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+    dnf install docker-ce --nobest -y
+    systemctl enable docker
+    systemctl start docker
+    usermod -a -G docker vagrant
+    curl -L "https://github.com/docker/compose/releases/download/v2.2.3/docker-compose-linux-x86_64" -o /usr/bin/docker-compose
+    chmod 755 /usr/bin/docker-compose
+  SHELL
+end

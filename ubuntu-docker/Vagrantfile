@@ -1,0 +1,23 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/impish64"
+
+   config.vm.provision "shell", inline: <<-SHELL
+     apt-get update
+     curl -fsSL https://get.docker.com -o get-docker.sh
+     sh ./get-docker.sh
+     usermod -aG docker vagrant
+     rm ./get-docker.sh
+   SHELL
+
+end
+
+# To test
+#  $ vagrant up
+#  $ vagrant ssh
+#  $ docker run -it --rm alpine:latest
+#
+# Reference
+# https://docs.docker.com/engine/install/ubuntu/

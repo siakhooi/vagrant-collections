@@ -1,0 +1,26 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# centos-podman-remote
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/centos8"
+  config.vm.synced_folder "./", "/vagrant", type: "virtualbox"
+  config.vm.network "private_network", type: "dhcp"
+
+  config.vm.provision "shell", inline: <<-SHELL
+	yum -y update
+	yum -y install podman
+	loginctl enable-linger vagrant
+	firewall-cmd --add-port=22/tcp
+  SHELL
+  config.vm.provision "shell", privileged: false, inline: <<-SHELL
+	systemctl --user enable --now podman.socket
+	podman --remote info
+	cat /vagrant/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys
+	
+	echo "Run one of these:"
+	for ip in `hostname -I` ; do echo "podman system connection add vagrant --identity .ssh/id_ed25519 ssh://vagrant@${ip}/run/user/1000/podman/podman.sock" ; done
+
+  SHELL
+end
+

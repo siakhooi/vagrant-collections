@@ -37,3 +37,5 @@ Common useful Vagrantfiles
   - `docker-compose`
 - `centos8-podman`
   - `podman`
+- `centos8-podman-remote`
+  - `podman`

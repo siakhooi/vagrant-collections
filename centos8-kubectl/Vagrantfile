@@ -1,0 +1,20 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+## centos8-kubectl
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/centos8"
+  config.vm.synced_folder "./", "/vagrant", type: "virtualbox"
+
+  config.vm.provision "shell", inline: <<-SHELL
+    cp /vagrant/kubernetes.repo /etc/yum.repos.d/kubernetes.repo
+	chown root:root /etc/yum.repos.d/kubernetes.repo
+	cp /vagrant/upload-config.sh /usr/local/bin/upload-config.sh
+	dos2unix /usr/local/bin/upload-config.sh
+    yum update -y
+	yum install -y kubectl
+  SHELL
+  config.vm.provision "shell", privileged: false, inline: <<-SHELL
+    upload-config.sh
+  SHELL
+end

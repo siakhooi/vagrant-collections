@@ -1,0 +1,13 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# centos-podman
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/centos8"
+  config.vm.synced_folder "./", "/vagrant", type: "virtualbox"
+
+  config.vm.provision "shell", inline: <<-SHELL
+	yum -y update
+	yum -y install podman
+  SHELL
+end

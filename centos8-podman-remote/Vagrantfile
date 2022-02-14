@@ -19,7 +19,7 @@ Vagrant.configure("2") do |config|
 	cat /vagrant/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys
 	
 	echo "Run one of these:"
-	for ip in `hostname -I` ; do echo "podman system connection add vagrant --identity .ssh/id_ed25519 ssh://vagrant@${ip}/run/user/1000/podman/podman.sock" ; done
+	for ip in $(hostname -I) ; do echo "podman system connection add vagrant --identity .ssh/id_ed25519 ssh://vagrant@${ip}/run/user/1000/podman/podman.sock" ; done
 
   SHELL
 end

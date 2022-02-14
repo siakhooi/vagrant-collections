@@ -1,0 +1,23 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+
+#https://gitlab-runner-downloads.s3.amazonaws.com/latest/index.html
+# generic/centos8/gitlab-runner
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/centos8"
+
+  config.vm.synced_folder "./", "/vagrant", type: "virtualbox"
+  config.vm.network "private_network", type: "dhcp"
+
+  config.vm.provision "shell", inline: <<-SHELL
+    yum update -y
+	yum -y install git
+	curl -O https://gitlab-runner-downloads.s3.amazonaws.com/latest/rpm/gitlab-runner_i686.rpm
+	rpm -i gitlab-runner_i686.rpm
+    gitlab-runner register --non-interactive --executor "shell" \
+      --url "https://gitlabe1.ext.net.nokia.com/" \
+      --registration-token "aJ4ZvGfLDz4z3kyup-MY" 
+  SHELL
+end
+

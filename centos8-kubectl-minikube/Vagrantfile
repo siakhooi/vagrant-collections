@@ -1,0 +1,50 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+## centos8-kubectl-minikube
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/centos8"
+  config.vm.synced_folder "./", "/vagrant", type: "virtualbox"
+  #config.vm.network "forwarded_port", guest: 12345, host: 12345
+  config.vm.network "private_network", type: "dhcp"
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 4096
+    vb.cpus = 4
+  end  
+  config.vm.provision "shell", inline: <<-SHELL
+	dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+	dnf install docker-ce --nobest -y
+	usermod -a -G docker vagrant
+	systemctl enable docker
+	systemctl start docker
+
+	curl -L "https://github.com/docker/compose/releases/download/v2.2.3/docker-compose-linux-x86_64" -o /usr/bin/docker-compose
+    chmod 755 /usr/bin/docker-compose
+	
+	curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-latest.x86_64.rpm
+    rpm -Uvh minikube-latest.x86_64.rpm
+	rm minikube-latest.x86_64.rpm
+
+    cp /vagrant/kubernetes.repo /etc/yum.repos.d/kubernetes.repo
+	chown root:root /etc/yum.repos.d/kubernetes.repo
+	chmod 644 /etc/yum.repos.d/kubernetes.repo
+    yum update -y
+	yum install -y kubectl
+
+	#echo minikube start  # to start
+	#https://raw.githubusercontent.com/kubernetes/dashboard/v2.4.0/aio/deploy/recommended.yaml
+	
+	#firewall-cmd --add-port=8001/tcp
+	# kubectl proxy --address 0.0.0.0
+	#systemctl stop firewalld
+	#echo minikube dashboard --port 12345 --url  # to start dashboard
+
+  SHELL
+  config.vm.provision "shell", privileged: false, inline: <<-SHELL
+    #minikube start
+	#minikube start --listen-address=0.0.0.0
+	#minikube start --listen-address=192.168.56.4
+    #minikube dashboard --url 
+	#minikube dashboard --port 12345 --url  --listen-address=0.0.0.0
+  SHELL
+end
